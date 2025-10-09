@@ -11,6 +11,18 @@ const runtimeOpts = {
 };
 
 exports.getBibleData = functions.runWith(runtimeOpts).https.onRequest((req, res) => {
+  // Permite solicitações de qualquer origem (necessário para o navegador)
+  res.set('Access-Control-Allow-Origin', '*');
+
+  if (req.method === 'OPTIONS') {
+      // Lida com solicitações de preflight do CORS
+      res.set('Access-Control-Allow-Methods', 'GET');
+      res.set('Access-Control-Allow-Headers', 'Content-Type');
+      res.set('Access-Control-Max-Age', '3600');
+      res.status(204).send('');
+      return;
+  }
+
   const filePath = "./biblia_kjv_final.json";
   const readStream = fs.createReadStream(filePath);
 
