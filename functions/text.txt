@@ -1,0 +1,1 @@
+Este é um arquivo de texto de exemplo. Ele pode conter qualquer texto que você queira que seu aplicativo leia.
