@@ -1,0 +1,13 @@
+{
+  "name": "firestore-migration-script",
+  "version": "1.0.0",
+  "description": "Um script para migrar dados da Bíblia para o Firestore.",
+  "main": "populate_firestore.js",
+  "scripts": {
+    "start": "node populate_firestore.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.0.0",
+    "fs-extra": "^10.0.0"
+  }
+}
