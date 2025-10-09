@@ -13,7 +13,7 @@ const fetchVerses = async (lang: Language): Promise<any[]> => {
 
     try {
         // Lembre-se de substituir esta URL pela URL real da sua função após o deploy
-        const response = await fetch(`https://us-central1-YOUR-PROJECT-ID.cloudfunctions.net/getVerseOfTheDay?lang=${lang}`);
+        const response = await fetch(`https://us-central1-semear-biblia.cloudfunctions.net/getVerseOfTheDay?lang=${lang}`);
         if (!response.ok) {
             throw new Error(`Failed to fetch verses for language: ${lang}`);
         }
