@@ -31,7 +31,7 @@ export const BibleProvider = React.memo(({ children }: React.PropsWithChildren<{
     const bookCache = useRef<Map<string, BookDataType>>(new Map());
 
     useEffect(() => {
-        fetch('https://us-central1-semear-biblia.cloudfunctions.net/getBibleData')
+        fetch('http://127.0.0.1:5001/semear-biblia/us-central1/getBibleData')
             .then(res => res.ok ? res.json() : {})
             .then(data => setBibleData(data))
             .catch(err => {
