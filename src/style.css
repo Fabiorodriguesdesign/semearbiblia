@@ -1,0 +1,746 @@
+/* ==================================================================== */
+/* 1. INITIAL LOADING, RESET & THEME VARIABLES
+/* ==================================================================== */
+.initial-loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #FBF9F6;
+    color: #423531;
+    font-family: 'Lato', sans-serif;
+    transition: opacity 0.5s ease-out;
+}
+.initial-loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #EAE6E1;
+    border-top-color: #BC5A45;
+    border-radius: 50%;
+    animation: initial-spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+@keyframes initial-spin {
+    to { transform: rotate(360deg); }
+}
+
+:root {
+    --primary-color: #BC5A45; /* Terracotta */
+    --primary-color-hover: #A54E3C;
+    --secondary-color: #4E342E; /* Deep Brown */
+    --accent-color: #818A6F; /* Sage Green */
+    --background-color: #FBF9F6; /* Warm Off-white */
+    --text-color: #423531; /* Dark Brown Text */
+    --card-bg: #FFFFFF;
+    --drawer-bg: #FFFFFF;
+    --border-color: #EAE6E1;
+    --shadow-color: rgba(90, 90, 90, 0.08);
+    --hover-bg: #F5F2EF;
+    --book-item-bg: #FDFBFA;
+    --book-item-border: #EAE6E1;
+    --logo-green-color: #818A6F;
+    --delete-color: #c62828;
+    --delete-color-hover: #b71c1c;
+    --font-serif: 'Merriweather', serif;
+    --font-sans: 'Lato', sans-serif;
+    
+    --persona-bg: #F5F2EF; 
+    --persona-text: #5D4037;
+    --persona-header: #4E342E;
+    --persona-border: #D7CCC8;
+
+    --matthew-color: #c62828; --matthew-bg: #ffebee;
+    --mark-color: #1565c0; --mark-bg: #e3f2fd;
+    --luke-color: #2e7d32; --luke-bg: #e8f5e9;
+    --john-color: #6a1b9a; --john-bg: #f3e5f5;
+    
+    /* Button colors for better theme management */
+    --button-bg-color: var(--primary-color);
+    --button-hover-bg-color: var(--primary-color-hover);
+    --delete-button-bg-color: var(--delete-color);
+    --delete-button-hover-bg-color: var(--delete-color-hover);
+}
+
+body.dark {
+    --primary-color: #f2795f; /* Accent color, for text & highlights */
+    --primary-color-hover: #e86a4f;
+    --secondary-color: #fff3f0; /* Main light text color (light beige) */
+    --accent-color: #d1c7c4; /* Lighter accent for secondary UI elements */
+    --background-color: #151210; /* Dark brown */
+    --text-color: #fff3f0; /* Main light text color (light beige) */
+    --card-bg: #211d1b;
+    --drawer-bg: #211d1b;
+    --border-color: #443c39;
+    --shadow-color: rgba(0,0,0,0.4);
+    --hover-bg: #3a3330;
+    --book-item-bg: #251f1d;
+    --book-item-border: #443c39;
+    --logo-green-color: var(--primary-color);
+    --delete-color: #EF4444; /* Used for text/icons */
+    --delete-color-hover: #F87171;
+    
+    --persona-bg: #251f1d;
+    --persona-text: #fff3f0;
+    --persona-header: var(--primary-color);
+    --persona-border: #443c39;
+
+    /* Gospel colors based on new palette */
+    --matthew-color: #f29e8c; --matthew-bg: #4a3c39;
+    --mark-color: #f2795f; --mark-bg: #4a3c39;
+    --luke-color: #f2b2a2; --luke-bg: #4a4539;
+    --john-color: #f28c75; --john-bg: #4a3c39;
+
+    /* Accessible Button Backgrounds for Dark Mode */
+    --button-bg-color: #D15B43; /* Darker orange for high contrast with light text */
+    --button-hover-bg-color: #B94F3A;
+    --delete-button-bg-color: #c53030;
+    --delete-button-hover-bg-color: #9b2c2c;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: var(--font-sans);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.65;
+    overscroll-behavior-y: contain;
+    transition: background-color 0.3s, color 0.3s;
+}
+h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    font-weight: 700;
+}
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+    color: inherit;
+}
+
+*:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ==================================================================== */
+/* 2. APP LAYOUT & STRUCTURE
+/* ==================================================================== */
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.app-header {
+    background-color: var(--card-bg);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 2px var(--shadow-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.main-content {
+    flex-grow: 1;
+    padding: 1.25rem;
+    overflow-y: auto;
+    padding-bottom: 80px; /* Space for bottom nav */
+}
+.app-footer {
+    display: none;
+}
+
+/* --- Cards --- */
+.card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    margin-bottom: 1.5rem;
+}
+.card h2 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+.card p {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+/* ==================================================================== */
+/* 3. NAVIGATION (HEADER, BOTTOM NAV, DRAWER)
+/* ==================================================================== */
+
+/* --- Header --- */
+.header-title-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+}
+.header-title {
+    font-size: 1.25rem;
+    font-family: var(--font-serif);
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.logo-icon {
+    color: var(--logo-green-color);
+    font-size: 1.5rem;
+}
+.header-nav {
+    display: none; /* Hide on mobile */
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* --- Bottom Navigation --- */
+.bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--card-bg);
+    box-shadow: 0 -1px 3px var(--shadow-color);
+    z-index: 1000;
+}
+.nav-button {
+    flex-grow: 1;
+    padding: 0.4rem 0;
+    color: var(--accent-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 0.7rem;
+    transition: color 0.2s;
+}
+.nav-button .material-icons {
+    font-size: 1.4rem;
+}
+.nav-button.active {
+    color: var(--primary-color);
+}
+.nav-button.active .nav-label {
+    font-weight: bold;
+}
+
+/* --- Side Drawer --- */
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1001;
+    transition: opacity 0.3s ease;
+}
+.side-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100%;
+    background-color: var(--drawer-bg);
+    z-index: 1002;
+    box-shadow: 2px 0 8px var(--shadow-color);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+.side-drawer.open {
+    transform: translateX(0);
+}
+.drawer-header {
+    padding: 1.25rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+}
+body.dark .drawer-header {
+    color: var(--text-color);
+}
+.drawer-nav {
+    list-style: none;
+    padding: 0.75rem 0;
+}
+.drawer-nav li button {
+    display: flex;
+    align-items: center;
+    padding: 0.9rem 1.5rem;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    transition: background-color 0.2s;
+    width: 100%;
+    text-align: left;
+}
+.drawer-nav li button:hover {
+    background-color: var(--hover-bg);
+}
+.drawer-nav .material-icons {
+    margin-right: 1.25rem;
+    color: var(--secondary-color);
+}
+.drawer-footer {
+    margin-top: auto;
+    padding: 1rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--accent-color);
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    line-height: 1.5;
+}
+.drawer-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+.drawer-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ==================================================================== */
+/* 4. BUTTONS & INTERACTIVE ELEMENTS
+/* ==================================================================== */
+.back-button, .action-button, .delete-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+.back-button .material-icons { font-size: 1.1rem; }
+
+.action-button, .delete-button {
+    background-color: var(--button-bg-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: background-color 0.2s;
+    margin-bottom: 0;
+}
+.action-button:hover { background-color: var(--button-hover-bg-color); }
+.delete-button { background-color: var(--delete-button-bg-color); }
+.delete-button:hover { background-color: var(--delete-button-hover-bg-color); }
+
+body.dark .action-button,
+body.dark .delete-button,
+body.dark .home-btn,
+body.dark .chat-input-form button,
+body.dark .fab,
+body.dark .create-plan-btn,
+body.dark .add-plan-btn,
+body.dark .quick-note-save-btn {
+    color: var(--text-color);
+}
+
+.theme-toggle-btn, .menu-toggle-btn {
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.theme-toggle-btn:hover, .menu-toggle-btn:hover { background-color: var(--hover-bg); }
+.theme-toggle-btn .material-icons { font-size: 1.5rem; color: var(--secondary-color); }
+.menu-toggle-btn .material-icons { font-size: 1.75rem; color: var(--secondary-color); }
+
+.language-toggle-wrapper {
+    position: relative;
+}
+.language-toggle-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    padding: 0.4rem 0.7rem;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-weight: bold;
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+}
+.language-toggle-btn:hover {
+    background-color: var(--hover-bg);
+}
+
+.language-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    z-index: 1100;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+}
+.language-option {
+    padding: 0.75rem 1.5rem;
+    text-align: left;
+    font-size: 0.9rem;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+.language-option:hover {
+    background-color: var(--hover-bg);
+}
+.language-option.active {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.fab {
+    position: fixed;
+    bottom: 70px; /* Above the bottom nav */
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: var(--button-bg-color);
+    color: white;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    transition: background-color 0.2s, transform 0.2s;
+}
+.fab:hover {
+    background-color: var(--button-hover-bg-color);
+    transform: scale(1.05);
+}
+.fab .material-icons { font-size: 22px; }
+
+/* ==================================================================== */
+/* 5. SPECIFIC VIEWS & COMPONENTS
+/* ==================================================================== */
+
+/* --- Home Screen --- */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+}
+.home-intro {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+.home-icon {
+    font-size: 4rem;
+    color: var(--logo-green-color);
+    margin-bottom: 0;
+}
+.home-container h2 {
+    font-family: var(--font-serif);
+    color: var(--secondary-color);
+    font-size: 1.75rem;
+    margin-bottom: 0;
+}
+.home-tagline {
+    font-size: 1.2rem;
+    line-height: 1.7;
+    max-width: 400px;
+    margin-bottom: 1rem;
+}
+.home-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 280px;
+}
+.home-btn {
+    padding: 0.9rem;
+    background-color: var(--button-bg-color);
+    color: white;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: background-color 0.2s, transform 0.2s;
+    box-shadow: 0 2px 6px var(--shadow-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.home-btn:hover {
+    background-color: var(--button-hover-bg-color);
+    transform: translateY(-2px);
+}
+
+/* --- Verse of the Day Card --- */
+.verse-of-the-day-card {
+    width: 100%;
+    max-width: 600px;
+    margin: 1.5rem auto 1rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background-color: var(--persona-bg);
+    border: 1px solid var(--persona-border);
+    box-shadow: 0 2px 6px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+}
+.verse-of-the-day-card > * { margin: 0; }
+.verse-of-the-day-card h4 {
+    font-family: var(--font-serif);
+    color: var(--persona-header);
+    font-size: 1.2rem;
+}
+.verse-of-the-day-card .verse-text {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--persona-text);
+    line-height: 1.7;
+    margin-top: 0.25rem;
+}
+.verse-of-the-day-card .verse-ref {
+    font-weight: bold;
+    color: var(--persona-header);
+    font-size: 1.1rem;
+}
+.verse-of-the-day-card .verse-reflection {
+    font-size: 1rem;
+    color: var(--persona-text);
+    opacity: 0.9;
+    line-height: 1.6;
+    margin-top: 0.5rem;
+    max-width: 90%;
+}
+
+/* --- Bible Reading: Book & Chapter Selection --- */
+.book-section-title {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    margin-top: 1.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--primary-color);
+    font-weight: 600;
+}
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+}
+.book-card {
+    background-color: var(--book-item-bg);
+    border: 1px solid var(--book-item-border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease-in-out;
+}
+.book-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
+.book-card-name {
+    flex-grow: 1;
+    padding: 0.75rem 0.5rem 0.75rem 1rem;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 600;
+}
+.book-card-name:hover { color: var(--primary-color); }
+.book-card-add-btn {
+    flex-shrink: 0;
+    width: 44px; /* Increased tap target */
+    height: 44px; /* Increased tap target */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid var(--book-item-border);
+    color: var(--accent-color);
+    transition: all 0.2s;
+}
+.book-card-add-btn:hover {
+    background-color: var(--button-bg-color);
+    color: white;
+    border-color: var(--button-hover-bg-color);
+}
+body.dark .book-card-add-btn:hover {
+    color: var(--text-color);
+}
+.book-card-add-btn .material-icons { font-size: 1.2rem; }
+
+.deuterocanonical-section .book-section-title {
+    color: var(--secondary-color);
+    border-bottom: 1px solid var(--secondary-color);
+}
+.deuterocanonical-section .book-card {
+    background-color: #EFEBE9;
+    border-color: var(--accent-color);
+}
+.deuterocanonical-section .book-card-name { color: var(--secondary-color); font-weight: 700; }
+.deuterocanonical-section .book-card-name:hover { color: var(--primary-color); }
+.deuterocanonical-section .book-card-add-btn { border-left-color: var(--accent-color); }
+.deuterocanonical-section .book-card-add-btn:hover { background-color: var(--secondary-color); }
+body.dark .deuterocanonical-section .book-section-title { border-bottom-color: var(--accent-color); }
+body.dark .deuterocanonical-section .book-card { background-color: #3a3a3a; border-color: var(--accent-color); }
+body.dark .deuterocanonical-section .book-card-name { color: var(--accent-color); }
+
+.chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+}
+.chapter-item {
+    background-color: var(--book-item-bg);
+    border: 1px solid var(--book-item-border);
+    color: var(--text-color);
+    padding: 0.75rem 0.25rem;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    line-height: 1;
+}
+.chapter-item:hover {
+    background-color: var(--button-bg-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px var(--shadow-color);
+    border-color: var(--button-hover-bg-color);
+}
+body.dark .chapter-item:hover {
+    color: var(--text-color);
+}
+.chapter-item:active {
+    transform: scale(0.96);
+    transition: transform 0.1s ease;
+}
+
+/* --- Bible Reading: Verse View --- */
+.reading-view {
+    touch-action: pan-y; /* Allow vertical scroll, handle horizontal in JS */
+}
+.reading-view h2 { margin-bottom: 1.5rem; }
+.verse-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.verse-item {
+    line-height: 1.8;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-serif);
+    position: relative;
+    padding-left: 1.75rem;
+}
+.verse-number {
+    position: relative;
+    top: -0.3em;
+    font-family: var(--font-sans);
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-right: 0.4em;
+    font-size: 0.75em;
+}
+.bookmark-btn {
+    position: absolute;
+    left: 0;
+    top: 0.1rem;
+    padding: 0.25rem;
+    color: var(--accent-color);
+    transition: color 0.2s, transform 0.2s;
+}
+.bookmark-btn .material-icons { font-size: 1.25rem; }
+.bookmark-btn:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+.bookmark-btn.bookmarked { color: var(--primary-color); }
+.reading-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+.reading-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 50px;
+    background-color: var(--hover-bg);
+    color: var(--primary-color);
+    font-weight: bold;
+    transition: background-color 0.2s, color 0.2s;
+}
+.reading-nav-btn:hover:not(:disabled) {
+    background-color: var(--button-bg-color);
+    color: white;
+}
+body.dark .reading-nav-btn:hover:not(:disabled) {
+    color: var(--text-color);
+}
+.reading-nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--border-color);
+    color: var(--accent-color);
+}
+.reading-nav-btn .material-icons { font-size: 1.2rem; }
+.reading-nav-current {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+    text-align: center;
+}

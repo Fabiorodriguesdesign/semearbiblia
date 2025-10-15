@@ -1,9 +1,9 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Tab, VerseOfTheDay as VerseType } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { translations } from '../data/translations';
-import { getDynamicVerseOfTheDay } from '../utils/verseUtils';
-import Logo from '../components/Logo';
+import { Tab, VerseOfTheDay as VerseType } from '../tipos';
+import { useLanguage } from '../contextos/LanguageContext';
+import { translations } from '../dados/traduções';
+import { getDynamicVerseOfTheDay } from '../utilitários/verseUtils';
+import Logo from '../componentes/comum/Logo';
 
 const VerseOfTheDay = React.memo(() => {
     const { language } = useLanguage();
@@ -18,7 +18,7 @@ const VerseOfTheDay = React.memo(() => {
                 setVerse(dynamicVerse);
             } catch (error) {
                 console.error("Falha ao buscar o versículo do dia:", error);
-                setVerse(null); // Garante que dados antigos ou corrompidos não sejam exibidos
+                setVerse(null);
             } finally {
                 setLoading(false);
             }
@@ -27,7 +27,6 @@ const VerseOfTheDay = React.memo(() => {
         fetchVerse();
     }, [language]);
     
-    // Renderiza o card com o estado de carregamento
     if (loading) {
         return (
             <div className="verse-of-the-day-card">
@@ -37,7 +36,6 @@ const VerseOfTheDay = React.memo(() => {
         );
     }
 
-    // Renderiza o card quando o versículo foi carregado
     if (!verse) {
         return (
              <div className="verse-of-the-day-card">
@@ -50,7 +48,7 @@ const VerseOfTheDay = React.memo(() => {
     return (
         <div className="verse-of-the-day-card">
             <h4>{translations.verse_of_the_day[language]}</h4>
-            <p className="verse-text">"{verse.text}"</p>
+            <p className="verse-text">\"{verse.text}\"</p>
             <p className="verse-ref">{verse.book} {verse.chapter}:{verse.verse}</p>
             {verse.reflection && <p className="verse-reflection">{verse.reflection}</p>}
         </div>
