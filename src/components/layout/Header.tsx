@@ -3,6 +3,7 @@ import { Tab, Language } from '../../types';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translations } from '../../data/translations';
+import Logo from '../Logo'; // Importando o componente do logo
 
 const Header = React.memo(({ activeTab, setActiveTab, onMenuClick, onLogoClick }: { activeTab: Tab, setActiveTab: (tab: Tab) => void, onMenuClick: () => void, onLogoClick: () => void }) => {
     const { theme, toggleTheme } = useTheme();
@@ -43,7 +44,7 @@ const Header = React.memo(({ activeTab, setActiveTab, onMenuClick, onLogoClick }
         <header className="app-header">
              <button className="header-title-btn" onClick={onLogoClick} aria-label={translations.go_home_aria[language]}>
                  <h1 className="header-title">
-                    <i className="material-icons logo-icon">spa</i>
+                    <Logo className="logo-icon" /> {/* Substituído o ícone pelo componente Logo */}
                     <span>{translations.appName[language]}</span>
                  </h1>
              </button>
@@ -71,6 +72,9 @@ const Header = React.memo(({ activeTab, setActiveTab, onMenuClick, onLogoClick }
                         </div>
                     )}
                 </div>
+                <button className="ko-fi-button-header" onClick={() => window.open('https://ko-fi.com/fabiorodriguesdsgn', '_blank')} aria-label={translations.drawer_donate[language]}>
+                     <i className="material-icons">coffee</i>
+                </button>
                 <button className="theme-toggle-btn" onClick={toggleTheme} aria-label={translations.toggle_theme_aria[language]}>
                      <i className="material-icons">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</i>
                 </button>

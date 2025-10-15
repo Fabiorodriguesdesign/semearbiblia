@@ -1,11 +1,20 @@
 import { Language } from '../types';
 import { normalizeString } from '../utils/utils';
 
+// Tipos existentes e a nova estrutura para detalhes de arquivos
 type BookDetails = {
     chapters: number;
     names: { [lang in Language]: string };
 };
 
+export type BookFileDetail = {
+    testament: 'ot' | 'nt' | 'dc' | 'ap';
+    folder: string; 
+    files: string[];
+};
+
+
+// Objeto principal com os nomes e capítulos de cada livro
 const bibleBookData: { [canonicalName: string]: BookDetails } = {
     // Old Testament
     'Genesis': { chapters: 50, names: { pt: 'Gênesis', en: 'Genesis', es: 'Génesis' } },
@@ -47,6 +56,7 @@ const bibleBookData: { [canonicalName: string]: BookDetails } = {
     'Haggai': { chapters: 2, names: { pt: 'Ageu', en: 'Haggai', es: 'Hageo' } },
     'Zechariah': { chapters: 14, names: { pt: 'Zacarias', en: 'Zechariah', es: 'Zacarías' } },
     'Malachi': { chapters: 4, names: { pt: 'Malaquias', en: 'Malachi', es: 'Malaquías' } },
+
     // New Testament
     'Matthew': { chapters: 28, names: { pt: 'Mateus', en: 'Matthew', es: 'Mateo' } },
     'Mark': { chapters: 16, names: { pt: 'Marcos', en: 'Mark', es: 'Marcos' } },
@@ -75,7 +85,8 @@ const bibleBookData: { [canonicalName: string]: BookDetails } = {
     '3 John': { chapters: 1, names: { pt: '3 João', en: '3 John', es: '3 Juan' } },
     'Jude': { chapters: 1, names: { pt: 'Judas', en: 'Jude', es: 'Judas' } },
     'Revelation': { chapters: 22, names: { pt: 'Apocalipse', en: 'Revelation', es: 'Apocalipsis' } },
-    // Deuterocanonical
+    
+    // Deuterocanonical, Apocryphal, etc.
     'Tobit': { chapters: 14, names: { pt: 'Tobias', en: 'Tobit', es: 'Tobías' } },
     'Judith': { chapters: 16, names: { pt: 'Judite', en: 'Judith', es: 'Judit' } },
     'Wisdom of Solomon': { chapters: 19, names: { pt: 'Sabedoria de Salomão', en: 'Wisdom of Solomon', es: 'Sabiduría' } },
@@ -83,9 +94,8 @@ const bibleBookData: { [canonicalName: string]: BookDetails } = {
     'Baruch': { chapters: 6, names: { pt: 'Baruque', en: 'Baruch', es: 'Baruc' } },
     '1 Maccabees': { chapters: 16, names: { pt: '1 Macabeus', en: '1 Maccabees', es: '1 Macabeos' } },
     '2 Maccabees': { chapters: 15, names: { pt: '2 Macabeus', en: '2 Maccabees', es: '2 Macabeos' } },
-    'Additions to Esther': { chapters: 1, names: { pt: 'Adições a Ester', en: 'Additions to Esther', es: 'Añadiduras a Ester' } },
-    'Additions to Daniel': { chapters: 1, names: { pt: 'Adições a Daniel', en: 'Additions to Daniel', es: 'Añadiduras a Daniel' } },
-    // Apocryphal
+    'Additions to Esther': { chapters: 6, names: { pt: 'Adições a Ester', en: 'Additions to Esther', es: 'Añadiduras a Ester' } },
+    'Additions to Daniel': { chapters: 2, names: { pt: 'Adições a Daniel', en: 'Additions to Daniel', es: 'Añadiduras a Daniel' } },
     '1 Esdras': { chapters: 9, names: { pt: '1 Esdras', en: '1 Esdras', es: '1 Esdras' } },
     '2 Esdras': { chapters: 16, names: { pt: '2 Esdras', en: '2 Esdras', es: '2 Esdras' } },
     '3 Maccabees': { chapters: 7, names: { pt: '3 Macabeus', en: '3 Maccabees', es: '3 Macabeos' } },
@@ -93,17 +103,91 @@ const bibleBookData: { [canonicalName: string]: BookDetails } = {
     'Psalm 151': { chapters: 1, names: { pt: 'Salmo 151', en: 'Psalm 151', es: 'Salmo 151' } },
     'Book of Enoch': { chapters: 108, names: { pt: 'Livro de Enoque', en: 'Book of Enoch', es: 'Libro de Enoc' } },
     'Book of Jubilees': { chapters: 50, names: { pt: 'Livro dos Jubileus', en: 'Book of Jubilees', es: 'Libro de los Jubileos' } },
-    'Testament of the Twelve Patriarchs': { chapters: 1, names: { pt: 'Testamento dos Doze Patriarcas', en: 'Testament of the Twelve Patriarchs', es: 'Testamento de los Doce Patriarcas' } },
+    'Testament of the Twelve Patriarchs': { chapters: 12, names: { pt: 'Testamento dos Doze Patriarcas', en: 'Testament of the Twelve Patriarchs', es: 'Testamento de los Doce Patriarcas' } },
     'Apocalypse of Baruch': { chapters: 87, names: { pt: 'Apocalipse de Baruc', en: 'Apocalypse of Baruch', es: 'Apocalipsis de Baruc' } },
     'Assumption of Moses': { chapters: 12, names: { pt: 'Assunção de Moisés', en: 'Assumption of Moses', es: 'Asunción de Moisés' } },
     'Psalms of Solomon': { chapters: 18, names: { pt: 'Salmos de Salomão', en: 'Psalms of Solomon', es: 'Salmos de Salomón' } },
     'Gospel of Thomas': { chapters: 1, names: { pt: 'Evangelho de Tomé', en: 'Gospel of Thomas', es: 'Evangelio de Tomás' } },
-    'Gospel of Peter': { chapters: 1, names: { pt: 'Evangelho de Pedro', en: 'Gospel of Peter', es: 'Evangelio de Pedro' } },
+    'Gospel of Peter': { chapters: 14, names: { pt: 'Evangelho de Pedro', en: 'Gospel of Peter', es: 'Evangelio de Pedro' } },
     'Proto-Gospel of James': { chapters: 24, names: { pt: 'Proto-Evangelho de Tiago', en: 'Proto-Gospel of James', es: 'Protoevangelio de Santiago' } },
     'Gospel of Philip': { chapters: 1, names: { pt: 'Evangelho de Filipe', en: 'Gospel of Philip', es: 'Evangelio de Felipe' } },
-    'Acts of Peter': { chapters: 1, names: { pt: 'Atos de Pedro', en: 'Acts of Peter', es: 'Hechos de Pedro' } },
+    'Acts of Peter': { chapters: 32, names: { pt: 'Atos de Pedro', en: 'Acts of Peter', es: 'Hechos de Pedro' } },
 };
 
+// --- ESTRUTURA NOVA PARA MAPEAMENTO DE ARQUIVOS ---
+// Mapeia o nome canônico para os detalhes do arquivo físico no diretório /public
+const bookFileDetails: { [canonicalName: string]: BookFileDetail } = {
+    // OT
+    'Genesis': { testament: 'ot', folder: 'genesis', files: ['biblia_kjv_01genesis-1-20.json', 'biblia_kjv_01genesis-21-35.json', 'biblia_kjv_01genesis-36-50.json']},
+    'Exodus': { testament: 'ot', folder: 'exodo', files: ['biblia_kjv_02exodo1-20.json', 'biblia_kjv_02exodo21-40.json']},
+    'Leviticus': { testament: 'ot', folder: 'levitico', files: ['biblia_kjv_03levitico1-27.json']},
+    'Numbers': { testament: 'ot', folder: 'numeros', files: ['biblia_kjv_04numeros1-15.json', 'biblia_kjv_04numeros16-36.json']},
+    'Deuteronomy': { testament: 'ot', folder: 'deuteronomio', files: ['biblia_kjv_05deuteronomio1-17.json', 'biblia_kjv_05deuteronomio18-34.json']},
+    'Joshua': { testament: 'ot', folder: 'josue', files: ['biblia_kjv_06josue1-10.json', 'biblia_kjv_06josue11-24.json']},
+    'Judges': { testament: 'ot', folder: 'juizes', files: ['biblia_kjv_07juizes1-10.json', 'biblia_kjv_07juizes11-21.json']},
+    'Ruth': { testament: 'ot', folder: 'rute', files: ['biblia_kjv_08rute.json']},
+    '1 Samuel': { testament: 'ot', folder: '1samuel', files: ['biblia_kjv_09_1samuel1-20.json', 'biblia_kjv_09_1samuel21-31.json']},
+    '2 Samuel': { testament: 'ot', folder: '2samuel', files: ['biblia_kjv_10_2samuel1-10.json', 'biblia_kjv_10_2samuel11-24.json']},
+    '1 Kings': { testament: 'ot', folder: '1reis', files: ['biblia_kjv_11_1reis1-10.json', 'biblia_kjv_11_1reis11-22.json']},
+    '2 Kings': { testament: 'ot', folder: '2reis', files: ['biblia_kjv_12_2reis1-10.json', 'biblia_kjv_12_2reis11-25.json']},
+    '1 Chronicles': { testament: 'ot', folder: '1cronicas', files: ['biblia_kjv_13_1cronicas1-20.json', 'biblia_kjv_13_1cronicas21-29.json']},
+    '2 Chronicles': { testament: 'ot', folder: '2cronicas', files: ['biblia_kjv_14_2cronicas1-20.json', 'biblia_kjv_14_2cronicas21-36.json']},
+    'Ezra': { testament: 'ot', folder: 'esdras', files: ['biblia_kjv_15esdras.json']},
+    'Nehemiah': { testament: 'ot', folder: 'neemias', files: ['biblia_kjv_16neemias.json']},
+    'Esther': { testament: 'ot', folder: 'ester', files: ['biblia_kjv_17ester.json']},
+    'Job': { testament: 'ot', folder: 'jo', files: ['biblia_kjv_18jo.json']},
+    'Psalms': { testament: 'ot', folder: 'salmos', files: ['biblia_kjv_19salmos1-20.json', 'biblia_kjv_19salmos21-40.json', 'biblia_kjv_19salmos41-60.json', 'biblia_kjv_19salmos61-80.json', 'biblia_kjv_19salmos81-100.json', 'biblia_kjv_19salmos101-120.json', 'biblia_kjv_19salmos121-140.json', 'biblia_kjv_19salmos141-150.json']},
+    'Proverbs': { testament: 'ot', folder: 'proverbios', files: ['biblia_kjv_20proverbios1-15.json', 'biblia_kjv_20proverbios16-31.json']},
+    'Ecclesiastes': { testament: 'ot', folder: 'eclesiastes', files: ['biblia_kjv_21eclesiastes.json']},
+    'Song of Solomon': { testament: 'ot', folder: 'cantico_canticos', files: ['biblia_kjv_22cantico_canticos.json']},
+    'Isaiah': { testament: 'ot', folder: 'isaias', files: ['biblia_kjv_23isaias1-20.json', 'biblia_kjv_23isaias21-40.json', 'biblia_kjv_23isaias41-52.json', 'biblia_kjv_23isaias53-66.json']},
+    'Jeremiah': { testament: 'ot', folder: 'jeremias', files: ['biblia_kjv_24jeremias1-15.json', 'biblia_kjv_24jeremias16-30.json', 'biblia_kjv_24jeremias31-40.json', 'biblia_kjv_24jeremias41-52.json']},
+    'Lamentations': { testament: 'ot', folder: 'lamentacoes', files: ['biblia_kjv_25lamentacoes.json']},
+    'Ezekiel': { testament: 'ot', folder: 'ezequiel', files: ['biblia_kjv_26ezequiel1-15.json', 'biblia_kjv_26ezequiel16-30.json', 'biblia_kjv_26ezequiel31-48.json']},
+    'Daniel': { testament: 'ot', folder: 'daniel', files: ['biblia_kjv_27daniel.json']},
+    'Hosea': { testament: 'ot', folder: 'oseias', files: ['biblia_kjv_28oseias.json']},
+    'Joel': { testament: 'ot', folder: 'joel', files: ['biblia_kjv_29joel.json']},
+    'Amos': { testament: 'ot', folder: 'amos', files: ['biblia_kjv_30amos.json']},
+    'Obadiah': { testament: 'ot', folder: 'obadias', files: ['biblia_kjv_31obadias.json']},
+    'Jonah': { testament: 'ot', folder: 'jonas', files: ['biblia_kjv_32jonas.json']},
+    'Micah': { testament: 'ot', folder: 'miqueias', files: ['biblia_kjv_33miqueias.json']},
+    'Nahum': { testament: 'ot', folder: 'naum', files: ['biblia_kjv_34naum.json']},
+    'Habakkuk': { testament: 'ot', folder: 'habacuque', files: ['biblia_kjv_35habacuque.json']},
+    'Zephaniah': { testament: 'ot', folder: 'sofonias', files: ['biblia_kjv_36sofonias.json']},
+    'Haggai': { testament: 'ot', folder: 'ageu', files: ['biblia_kjv_37ageu.json']},
+    'Zechariah': { testament: 'ot', folder: 'zacarias', files: ['biblia_kjv_38zacarias.json']},
+    'Malachi': { testament: 'ot', folder: 'malaquias', files: ['biblia_kjv_39malaquias.json']},
+    // NT
+    'Matthew': { testament: 'nt', folder: 'mateus', files: ['biblia_kjv_40mateus1-15.json', 'biblia_kjv_40mateus16-28.json']},
+    'Mark': { testament: 'nt', folder: 'marcos', files: ['biblia_kjv_41marcos.json']},
+    'Luke': { testament: 'nt', folder: 'lucas', files: ['biblia_kjv_42lucas.json']},
+    'John': { testament: 'nt', folder: 'joao', files: ['biblia_kjv_43joao.json']},
+    'Acts': { testament: 'nt', folder: 'atos', files: ['biblia_kjv_44atos1-20.json', 'biblia_kjv_44atos21-28.json']},
+    'Romans': { testament: 'nt', folder: 'romanos', files: ['biblia_kjv_45romanos.json']},
+    '1 Corinthians': { testament: 'nt', folder: '1corintios', files: ['biblia_kjv_46_1corintios.json']},
+    '2 Corinthians': { testament: 'nt', folder: '2corintios', files: ['biblia_kjv_47_2corintios.json']},
+    'Galatians': { testament: 'nt', folder: 'galatas', files: ['biblia_kjv_48galatas.json']},
+    'Ephesians': { testament: 'nt', folder: 'efesios', files: ['biblia_kjv_49efesios.json']},
+    'Philippians': { testament: 'nt', folder: 'filipenses', files: ['biblia_kjv_50filipenses.json']},
+    'Colossians': { testament: 'nt', folder: 'colossenses', files: ['biblia_kjv_51colossenses.json']},
+    '1 Thessalonians': { testament: 'nt', folder: '1tessalonicenses', files: ['biblia_kjv_52_1tessalonicenses.json']},
+    '2 Thessalonians': { testament: 'nt', folder: '2tessalonicenses', files: ['biblia_kjv_53_2tessalonicenses.json']},
+    '1 Timothy': { testament: 'nt', folder: '1timoteo', files: ['biblia_kjv_54_1timoteo.json']},
+    '2 Timothy': { testament: 'nt', folder: '2timoteo', files: ['biblia_kjv_55_2timoteo.json']},
+    'Titus': { testament: 'nt', folder: 'tito', files: ['biblia_kjv_56tito.json']},
+    'Philemon': { testament: 'nt', folder: 'filemom', files: ['biblia_kjv_57filemom.json']},
+    'Hebrews': { testament: 'nt', folder: 'hebreus', files: ['biblia_kjv_58hebreus.json']},
+    'James': { testament: 'nt', folder: 'tiago', files: ['biblia_kjv_59tiago.json']},
+    '1 Peter': { testament: 'nt', folder: '1pedro', files: ['biblia_kjv_60_1pedro.json']},
+    '2 Peter': { testament: 'nt', folder: '2pedro', files: ['biblia_kjv_61_2pedro.json']},
+    '1 John': { testament: 'nt', folder: '1joao', files: ['biblia_kjv_62_1joao.json']},
+    '2 John': { testament: 'nt', folder: '2joao', files: ['biblia_kjv_63_2joao.json']},
+    '3 John': { testament: 'nt', folder: '3joao', files: ['biblia_kjv_64_3joao.json']},
+    'Jude': { testament: 'nt', folder: 'judas', files: ['biblia_kjv_65judas.json']},
+    'Revelation': { testament: 'nt', folder: 'apocalipse', files: ['biblia_kjv_66apocalipse.json']},
+};
+
+// --- Listas e Mapeamentos Antigos (ainda necessários) ---
 const CANONICAL_ORDER = {
     ot: ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth', '1 Samuel', '2 Samuel', '1 Kings', '2 Kings', '1 Chronicles', '2 Chronicles', 'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalms', 'Proverbs', 'Ecclesiastes', 'Song of Solomon', 'Isaiah', 'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel', 'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum', 'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi'],
     nt: ['Matthew', 'Mark', 'Luke', 'John', 'Acts', 'Romans', '1 Corinthians', '2 Corinthians', 'Galatians', 'Ephesians', 'Philippians', 'Colossians', '1 Thessalonians', '2 Thessalonians', '1 Timothy', '2 Timothy', 'Titus', 'Philemon', 'Hebrews', 'James', '1 Peter', '2 Peter', '1 John', '2 John', '3 John', 'Jude', 'Revelation'],
@@ -115,16 +199,18 @@ const CANONICAL_ORDER = {
     gospels: ['Matthew', 'Mark', 'Luke', 'John']
 };
 
-const pt_abbreviations = {'gn':'Genesis','êx':'Exodus','ex':'Exodus','lv':'Leviticus','nm':'Numbers','dt':'Deuteronomy','js':'Joshua','jz':'Judges','rt':'Ruth','1sm':'1 Samuel','2sm':'2 Samuel','1 sm':'1 Samuel','2 sm':'2 Samuel','1rs':'1 Kings','2rs':'2 Kings','1cr':'1 Chronicles','2cr':'2 Chronicles','1 crôn':'1 Chronicles','2 crôn':'2 Chronicles','ed':'Ezra','ne':'Nehemiah','et':'Esther','jó':'Job','sl':'Psalms','sal':'Psalms','slm':'Psalms','pv':'Proverbs','prov':'Proverbs','ec':'Ecclesiastes','ecles':'Ecclesiastes','ct':'Song of Solomon','cant':'Song of Solomon','is':'Isaiah','isa':'Isaiah','jr':'Jeremiah','jer':'Jeremiah','lm':'Lamentations','ez':'Ezekiel','ezeq':'Ezekiel','dn':'Daniel','dan':'Daniel','os':'Hosea','jl':'Joel','am':'Amos','ob':'Obadiah','jn':'Jonah','jon':'Jonah','mq':'Micah','miq':'Micah','na':'Nahum','hc':'Habakkuk','hab':'Habakkuk','sf':'Zephaniah','sof':'Zephaniah','ag':'Haggai','zc':'Zechariah','zac':'Zechariah','ml':'Malachi','mal':'Malachi','mt':'Matthew','mat':'Matthew','mc':'Mark','mar':'Mark','lc':'Luke','luc':'Luke','jo':'John','joa':'John','at':'Acts','atos':'Acts','rm':'Romans','rom':'Romans','1co':'1 Corinthians','2co':'2 Corinthians','1 cor':'1 Corinthians','2 cor':'2 Corinthians','gl':'Galatians','gal':'Galatians','ef':'Ephesians','efes':'Ephesians','fp':'Philippians','fil':'Philippians','cl':'Colossians','col':'Colossians','1ts':'1 Thessalonians','2ts':'2 Thessalonians','1 tes':'1 Thessalonians','2 tes':'2 Thessalonians','1tm':'1 Timothy','2tm':'2 Timothy','1 tim':'1 Timothy','2 tim':'2 Timothy','tt':'Titus','tit':'Titus','fm':'Philemon','filem':'Philemon','hb':'Hebrews','heb':'Hebrews','tg':'James','tia':'James','1pe':'1 Peter','2pe':'2 Peter','1 ped':'1 Peter','2 ped':'2 Peter','1jo':'1 John','2jo':'2 John','3jo':'3 John','1 joa':'1 John','2 joa':'2 John','3 joa':'3 John','jd':'Jude','jud':'Jude','ap':'Revelation','apoc':'Revelation','gênesis':'Genesis','êxodo':'Exodus','levítico':'Leviticus','números':'Numbers','deuteronômio':'Deuteronomy','josué':'Joshua','juízes':'Judges','rute':'Ruth','1 samuel':'1 Samuel','2 samuel':'2 Samuel','1 reis':'1 Kings','2 reis':'2 Kings','1 crônicas':'1 Chronicles','2 crônicas':'2 Chronicles','esdras':'Ezra','neemias':'Nehemiah','ester':'Esther','salmos':'Psalms','provérbios':'Proverbs','eclesiastes':'Ecclesiastes','cânticos':'Song of Solomon','cantares':'Song of Solomon','isaías':'Isaiah','jeremias':'Jeremiah','lamentações':'Lamentations','ezequiel':'Ezekiel','daniel':'Daniel','oseias':'Hosea','amós':'Amos','obadias':'Obadiah','jonas':'Jonah','miqueias':'Micah','naum':'Nahum','habacuque':'Habakkuk','sofonias':'Zephaniah','ageu':'Haggai','zacarias':'Zechariah','malaquias':'Malachi','mateus':'Matthew','marcos':'Mark','lucas':'Luke','joão':'John','romanos':'Romans','1 coríntios':'1 Corinthians','2 coríntios':'2 Corinthians','gálatas':'Galatians','efésios':'Ephesians','filipenses':'Philippians','colossenses':'Colossians','1 tessalonicenses':'1 Thessalonians','2 tessalonicenses':'2 Thessalonians','1 timóteo':'1 Timothy','2 timóteo':'2 Timothy','tito':'Titus','filemom':'Philemon','hebreus':'Hebrews','tiago':'James','1 pedro':'1 Peter','2 pedro':'2 Peter','1 joão':'1 John','2 joão':'2 John','3 joão':'3 John','judas':'Jude','apocalipse':'Revelation'};
+const pt_abbreviations = {'gn':'Genesis','êx':'Exodus','ex':'Exodus','lv':'Leviticus','nm':'Numbers','dt':'Deuteronomy','js':'Joshua','jz':'Judges','rt':'Ruth','1sm':'1 Samuel','2sm':'2 Samuel','1 sm':'1 Samuel','2 sm':'2 Samuel','1rs':'1 Kings','2rs':'2 Kings','1cr':'1 Chronicles','2cr':'2 Chronicles','1 crôn':'1 Chronicles','2 crôn':'2 Chronicles','ed':'Ezra','ne':'Nehemiah','et':'Esther','jó':'Job','sl':'Psalms','sal':'Psalms','slm':'Psalms','pv':'Proverbs','prov':'Proverbs','ec':'Ecclesiastes','ecles':'Ecclesiastes','ct':'Song of Solomon','cant':'Song of Solomon','is':'Isaiah','isa':'Isaiah','jr':'Jeremiah','jer':'Jeremiah','lm':'Lamentations','ez':'Ezekiel','ezeq':'Ezekiel','dn':'Daniel','dan':'Daniel','os':'Hosea','jl':'Joel','am':'Amos','ob':'Obadiah','jn':'Jonah','jon':'Jonah','mq':'Micah','miq':'Micah','na':'Nahum','hc':'Habakkuk','hab':'Habakkuk','sf':'Zephaniah','sof':'Zephaniah','ag':'Haggai','zc':'Zechariah','zac':'Zechariah','ml':'Malachi','mal':'Malachi','mt':'Matthew','mat':'Matthew','mc':'Mark','mar':'Mark','lc':'Luke','luc':'Luke','jo':'John','joa':'John','at':'Acts','atos':'Acts','rm':'Romans','rom':'Romans','1co':'1 Corinthians','2co':'2 Corinthians','1 cor':'1 Corinthians','2 cor':'2 Corinthians','gl':'Galatians','gal':'Galatians','ef':'Ephesians','efes':'Ephesians','fp':'Philippians','fil':'Philippians','cl':'Colossians','col':'Colossians','1ts':'1 Thessalonians','2ts':'2 Thessalonians','1 tes':'1 Thessalonians','2 tes':'2 Thessalonians','1tm':'1 Timothy','2tm':'2 Timothy','1 tim':'1 Timothy','2 tim':'2 Timothy','tt':'Titus','tit':'Titus','fm':'Philemon','filem':'Philemon','hb':'Hebrews','heb':'Hebrews','tg':'James','tia':'James','1pe':'1 Peter','2pe':'2 Peter','1 ped':'1 Peter','2 ped':'2 Peter','1jo':'1 John','2jo':'2 John','3jo':'3 John','1 joa':'1 John','2 joa':'2 John','3 joa':'3 John','jd':'Jude','jud':'Jude','ap':'Revelation','apoc':'Revelation','gênesis':'Genesis','êxodo':'Exodus','levítico':'Leviticus','números':'Numbers','deuteronômio':'Deuteronomy','josué':'Joshua','juízes':'Judges','rute':'Ruth','1 samuel':'1 Samuel','2 samuel':'2 Samuel','1 reis':'1 Kings','2 reis':'2 Kings','1 crônicas':'1 Chronicles','2 crônicas':'2 Chronicles','esdras':'Ezra','neemias':'Nehemiah','ester':'Esther','salmos':'Psalms','provérbios':'Proverbs','eclesiastes':'Ecclesiastes','cânticos':'Song of Solomon','cantares':'Song of Solomon','isaías':'Isaiah','jeremias':'Jeremiah','lamentações':'Lamentations','ezequiel':'Ezekiel','daniel':'Daniel','oseias':'Hosea','amós':'Amos','obadias':'Obadiah','jonas':'Jonah','miqueias':'Micah','naum':'Nahum','habacuque':'Habakkuk','sofonias':'Zephaniah','ageu':'Haggai','zacarias':'Zacariah','malaquias':'Malachi','mateus':'Matthew','marcos':'Mark','lucas':'Luke','joão':'John','romanos':'Romans','1 coríntios':'1 Corinthians','2 coríntios':'2 Corinthians','gálatas':'Galatians','efésios':'Ephesians','filipenses':'Philippians','colossenses':'Colossians','1 tessalonicenses':'1 Thessalonians','2 tessalonicenses':'2 Thessalonians','1 timóteo':'1 Timothy','2 timóteo':'2 Timothy','tito':'Titus','filemom':'Philemon','hebreus':'Hebrews','tiago':'James','1 pedro':'1 Peter','2 pedro':'2 Peter','1 joão':'1 John','2 joão':'2 John','3 joão':'3 John','judas':'Jude','apocalipse':'Revelation'};
 const en_abbreviations = {'gen':'Genesis','gn':'Genesis','exod':'Exodus','ex':'Exodus','lev':'Leviticus','lv':'Leviticus','num':'Numbers','nm':'Numbers','deut':'Deuteronomy','dt':'Deuteronomy','josh':'Joshua','jos':'Joshua','judg':'Judges','jg':'Judges','ruth':'Ruth','ru':'Ruth','1 sam':'1 Samuel','2 sam':'2 Samuel','1sa':'1 Samuel','2sa':'2 Samuel','1 kgs':'1 Kings','2 kgs':'2 Kings','1ki':'1 Kings','2ki':'2 Kings','1 chr':'1 Chronicles','2 chr':'2 Chronicles','1ch':'1 Chronicles','2ch':'2 Chronicles','ezra':'Ezra','ezr':'Ezra','neh':'Nehemiah','ne':'Nehemiah','est':'Esther','es':'Esther','job':'Job','jb':'Job','ps':'Psalms','psa':'Psalms','psalm':'Psalms','prov':'Proverbs','prv':'Proverbs','eccl':'Ecclesiastes','ecc':'Ecclesiastes','song':'Song of Solomon','sos':'Song of Solomon','isa':'Isaiah','is':'Isaiah','jer':'Jeremiah','je':'Jeremiah','lam':'Lamentations','la':'Lamentations','ezek':'Ezekiel','eze':'Ezekiel','dan':'Daniel','dn':'Daniel','hos':'Hosea','ho':'Hosea','joel':'Joel','jl':'Joel','amos':'Amos','am':'Amos','obad':'Obadiah','ob':'Obadiah','jonah':'Jonah','jon':'Jonah','mic':'Micah','mi':'Micah','nah':'Nahum','na':'Nahum','hab':'Habakkuk','hb':'Habakkuk','zeph':'Zephaniah','zep':'Zephaniah','hag':'Haggai','hg':'Haggai','zech':'Zechariah','zec':'Zechariah','mal':'Malachi','ml':'Malachi','matt':'Matthew','mt':'Matthew','mark':'Mark','mk':'Mark','luke':'Luke','lk':'Luke','john':'John','jn':'John','acts':'Acts','ac':'Acts','rom':'Romans','ro':'Romans','1 cor':'1 Corinthians','2 cor':'2 Corinthians','1co':'1 Corinthians','2co':'2 Corinthians','gal':'Galatians','ga':'Galatians','eph':'Ephesians','ep':'Ephesians','phil':'Philippians','php':'Philippians','col':'Colossians','co':'Colossians','1 thess':'1 Thessalonians','2 thess':'2 Thessalonians','1th':'1 Thessalonians','2th':'2 Thessalonians','1 tim':'1 Timothy','2 tim':'2 Timothy','1ti':'1 Timothy','2ti':'2 Timothy','titus':'Titus','ti':'Titus','philem':'Philemon','phm':'Philemon','heb':'Hebrews','he':'Hebrews','jas':'James','jm':'James','1 pet':'1 Peter','2 pet':'2 Peter','1pe':'1 Peter','2pe':'2 Peter','1 jn':'1 John','2 jn':'2 John','3 jn':'3 John','1jo':'1 John','2jo':'2 John','3jo':'3 John','jude':'Jude','jd':'Jude','rev':'Revelation','re':'Revelation'};
 const es_abbreviations = {'gn':'Genesis','gén':'Genesis','éx':'Exodus','ex':'Exodus','lv':'Leviticus','lev':'Leviticus','nm':'Numbers','núm':'Numbers','dt':'Deuteronomy','deut':'Deuteronomy','jos':'Joshua','jue':'Judges','jc':'Judges','rut':'Ruth','rt':'Ruth','1 sm':'1 Samuel','2 sm':'2 Samuel','1 sa':'1 Samuel','2 sa':'2 Samuel','1 re':'1 Kings','2 re':'2 Kings','1 cr':'1 Chronicles','2 cr':'2 Chronicles','1 cró':'1 Chronicles','2 cró':'2 Chronicles','esd':'Ezra','neh':'Nehemiah','est':'Esther','job':'Job','sal':'Psalms','sl':'Psalms','pr':'Proverbs','prov':'Proverbs','ecl':'Ecclesiastes','ec':'Ecclesiastes','cnt':'Song of Solomon','can':'Song of Solomon','is':'Isaiah','isa':'Isaiah','jer':'Jeremiah','jr':'Jeremiah','lm':'Lamentations','la':'Lamentations','ez':'Ezekiel','ezeq':'Ezekiel','dn':'Daniel','dan':'Daniel','os':'Hosea','jl':'Joel','am':'Amos','abd':'Obadiah','jon':'Jonah','miq':'Micah','mi':'Micah','nah':'Nahum','na':'Nahum','hab':'Habakkuk','ha':'Habakkuk','sof':'Zephaniah','sf':'Zephaniah','hag':'Haggai','ag':'Haggai','zac':'Zechariah','zc':'Zechariah','mal':'Malachi','ml':'Malachi','mt':'Matthew','mat':'Matthew','mc':'Mark','mr':'Mark','lc':'Luke','j':'Luke','jn':'John','hch':'Acts','hech':'Acts','rm':'Romans','rom':'Romans','1 co':'1 Corinthians','2 co':'2 Corinthians','1 cor':'1 Corinthians','2 cor':'2 Corinthians','gá':'Galatians','gál':'Galatians','ef':'Ephesians','efes':'Ephesians','flp':'Philippians','fil':'Philippians','col':'Colossians','1 ts':'1 Thessalonians','2 ts':'2 Thessalonians','1 tes':'1 Thessalonians','2 tes':'2 Thessalonians','1 ti':'1 Timothy','2 ti':'2 Timothy','1 tim':'1 Timothy','2 tim':'2 Timothy','tit':'Titus','tt':'Titus','flm':'Philemon','filem':'Philemon','heb':'Hebrews','he':'Hebrews','stg':'James','sant':'James','1 p':'1 Peter','2 p':'2 Peter','1 pe':'1 Peter','2 pe':'2 Peter','1 jn':'1 John','2 jn':'2 John','3 jn':'3 John','1 jua':'1 John','2 jua':'2 John','3 jua':'3 John','jud':'Jude','jds':'Jude','ap':'Revelation','apoc':'Revelation'};
 
 const full_name_maps: { [lang in Language]: { [name: string]: string } } = { pt: {}, en: {}, es: {} };
 for (const canonicalName in bibleBookData) {
-    const details = bibleBookData[canonicalName];
-    full_name_maps.pt[normalizeString(details.names.pt)] = canonicalName;
-    full_name_maps.en[normalizeString(details.names.en)] = canonicalName;
-    full_name_maps.es[normalizeString(details.names.es)] = canonicalName;
+    if (Object.prototype.hasOwnProperty.call(bibleBookData, canonicalName)) {
+        const details = bibleBookData[canonicalName];
+        full_name_maps.pt[normalizeString(details.names.pt)] = canonicalName;
+        full_name_maps.en[normalizeString(details.names.en)] = canonicalName;
+        full_name_maps.es[normalizeString(details.names.es)] = canonicalName;
+    }
 }
 
 const abbreviationMaps = {
@@ -132,6 +218,12 @@ const abbreviationMaps = {
     en: { ...en_abbreviations, ...full_name_maps.en },
     es: { ...es_abbreviations, ...full_name_maps.es },
 };
+
+// --- FUNÇÕES EXPORTADAS ---
+
+export const getBookDetails = (canonicalBookName: string): BookFileDetail | null => {
+    return bookFileDetails[canonicalBookName] || null;
+}
 
 export const getAbbreviationMap = (lang: Language): { [key: string]: string } => {
     return abbreviationMaps[lang];
@@ -146,6 +238,14 @@ export const getBookList = (type: 'ot' | 'nt' | 'dc' | 'ap' | 'all_canon' | 'all
     }
     return canonicalList.map(canonicalName => bibleBookData[canonicalName].names[language]);
 };
+
+export const getCanonicalBookList = (type: 'ot' | 'nt' | 'dc' | 'ap' | 'all_canon' | 'all' = 'all_canon'): string[] => {
+     switch (type) {
+        case 'all_canon': return [...CANONICAL_ORDER.ot, ...CANONICAL_ORDER.nt, ...CANONICAL_ORDER.dc];
+        case 'all': return [...CANONICAL_ORDER.ot, ...CANONICAL_ORDER.nt, ...CANONICAL_ORDER.dc, ...CANONICAL_ORDER.ap];
+        default: return CANONICAL_ORDER[type];
+    }
+}
 
 export const getChapterCount = (canonicalBookName: string): number => {
     return bibleBookData[canonicalBookName]?.chapters || 0;

@@ -1,9 +1,10 @@
-import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useRef, useEffect, useMemo } from 'react';
 import { ChapterType, VerseType } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useBookmarks } from '../../contexts/BookmarksContext';
 import { useToast } from '../../contexts/ToastContext';
 import { translations } from '../../data/translations';
+import { getBookName, getCanonicalBookList, getCanonicalName } from '../../data/bibleBooks';
 import BackButton from '../common/BackButton';
 
 interface ReadingViewProps {
@@ -13,6 +14,7 @@ interface ReadingViewProps {
     onBack: () => void;
     totalChapters: number;
     onChapterChange: (newChapter: number) => void;
+    onBookChange: (newCanonicalBookName: string) => void;
     verseToHighlight?: number;
 }
 
@@ -49,10 +51,12 @@ const VerseItem = React.memo(({ verseData, bookName, chapterNumber }: { verseDat
     );
 });
 
-const ReadingView = React.memo(({ bookName, chapterNumber, chapterData, onBack, totalChapters, onChapterChange, verseToHighlight }: ReadingViewProps) => {
+const ReadingView = React.memo(({ bookName, chapterNumber, chapterData, onBack, totalChapters, onChapterChange, onBookChange, verseToHighlight }: ReadingViewProps) => {
     const { language } = useLanguage();
     const touchStartX = useRef<number | null>(null);
     const touchStartY = useRef<number | null>(null);
+    
+    const ALL_CANONICAL_BOOKS = useMemo(() => getCanonicalBookList('all_canon'), []);
 
     useEffect(() => {
         if (verseToHighlight) {
@@ -74,6 +78,14 @@ const ReadingView = React.memo(({ bookName, chapterNumber, chapterData, onBack, 
             onChapterChange(chapterNumber + 1);
         }
     }, [chapterNumber, totalChapters, onChapterChange]);
+
+    const handleBookSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        onBookChange(e.target.value);
+    };
+
+    const handleChapterSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        onChapterChange(Number(e.target.value));
+    };
 
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
         touchStartX.current = e.targetTouches[0].clientX;
@@ -100,6 +112,8 @@ const ReadingView = React.memo(({ bookName, chapterNumber, chapterData, onBack, 
         touchStartX.current = null;
         touchStartY.current = null;
     }, [handlePrevChapter, handleNextChapter]);
+    
+    const currentCanonicalBook = getCanonicalName(bookName, language);
 
     return (
         <div 
@@ -115,13 +129,23 @@ const ReadingView = React.memo(({ bookName, chapterNumber, chapterData, onBack, 
                 ))}
             </div>
             <div className="reading-nav">
-                <button className="reading-nav-btn" onClick={handlePrevChapter} disabled={chapterNumber <= 1}>
-                    <i className="material-icons">chevron_left</i>
-                    <span>{translations.chapter_previous[language]}</span>
+                <button className="reading-nav-btn" onClick={handlePrevChapter} disabled={chapterNumber <= 1}>                    <i className="material-icons">chevron_left</i>
                 </button>
-                <span className="reading-nav-current">{bookName} {chapterNumber}</span>
+                <div className="reading-nav-selector">
+                    <select value={currentCanonicalBook || ''} onChange={handleBookSelectChange}>
+                        {ALL_CANONICAL_BOOKS.map(canonicalName => (
+                            <option key={canonicalName} value={canonicalName}>
+                                {getBookName(canonicalName, language)}
+                            </option>
+                        ))}
+                    </select>
+                    <select value={chapterNumber} onChange={handleChapterSelectChange}>
+                         {Array.from({ length: totalChapters }, (_, i) => i + 1).map(num => (
+                            <option key={num} value={num}>{num}</option>
+                         ))}
+                    </select>
+                </div>
                 <button className="reading-nav-btn" onClick={handleNextChapter} disabled={chapterNumber >= totalChapters}>
-                    <span>{translations.chapter_next[language]}</span>
                     <i className="material-icons">chevron_right</i>
                 </button>
             </div>

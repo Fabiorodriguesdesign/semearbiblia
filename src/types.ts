@@ -21,3 +21,21 @@ export type Bookmark = { book: string; chapter: number; verse: number; text: str
 // Tipos para dados estáticos
 export type ThematicReadingItem = { theme: string; references: string[]; };
 export type GospelHarmonyItem = { evento: string; passagens: { [key: string]: string }; observacoes: string; };
+
+export type ArchaeologyItem = {
+    title: string;
+    description: string;
+};
+
+export type ArchaeologyCategory = {
+    category: string;
+    items: ArchaeologyItem[];
+};
+
+export type VerseOfTheDay = {
+    book: string;
+    chapter: number;
+    verse: number;
+    text: string;
+    reflection: string;
+};

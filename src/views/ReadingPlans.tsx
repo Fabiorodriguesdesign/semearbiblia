@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { MyReadingPlan, ReadingPlan } from '../types';
 import { usePlans } from '../contexts/PlansContext';
 import { useToast } from '../contexts/ToastContext';
@@ -192,12 +191,13 @@ const MyPlanCard = React.memo(({ plan }: { plan: MyReadingPlan }) => {
         const renderChecklistContent = (list: any[], hasCategories: boolean) => (
             <div className="plan-checklist-container">
                 {hasCategories ? (
-                    Object.entries(list.reduce((acc, item) => {
+                    // FIX: Explicitly type the accumulator for `reduce` to prevent TypeScript from inferring `items` as `unknown`.
+                    Object.entries(list.reduce<Record<string, any[]>>((acc, item) => {
                         const category = item.category || 'Outros';
                         if (!acc[category]) acc[category] = [];
                         acc[category].push(item);
                         return acc;
-                    }, {} as Record<string, typeof list>)).map(([category, items]) => (
+                    }, {})).map(([category, items]) => (
                         <div key={category} className="checklist-category-section">
                             <h4 className="checklist-category-header">{category}</h4>
                             <ul className="plan-checklist">{items.map(renderChecklistItem)}</ul>
@@ -306,61 +306,26 @@ const ReadingPlans = () => {
     const { showToast } = useToast();
     const { language } = useLanguage();
     
-    const ai = useMemo(() => new GoogleGenAI({ apiKey: process.env.API_KEY }), []);
     const readingPlansData = useMemo(() => getReadingPlansData(language), [language]);
 
     const handleBackToList = useCallback(() => setView('list'), []);
 
     const handleGeneratePlan = useCallback(async (formData: any) => {
         setIsGeneratingPlan(true);
-
-        const { version, time, frequency, goal, preference } = formData;
-        
-        const langMap = { pt: 'português do Brasil', en: 'American English', es: 'Español' };
-        const currentLang = langMap[language] || 'português do Brasil';
-        
-        const systemInstruction = `You are a wise and empathetic Bible study assistant. Your goal is to create personalized, encouraging, and practical Bible reading plans. The response MUST be a valid JSON object that adheres to the provided schema. The response language must be ${currentLang}.`;
-
-        const prompt = `Create a personalized Bible reading plan based on the following user preferences:
-- Preferred Bible version: ${version}
-- Daily time available: ${time}
-- Weekly reading frequency: ${frequency}
-- Goal or current life situation: "${goal || 'Not specified, create a general plan for deepening faith.'}"
-- Reading style preference: ${preference}`;
-        
-        const responseSchema = {
-            type: Type.OBJECT,
-            properties: {
-                diagnosis: { type: Type.STRING, description: "Empathetic analysis of the user's situation in 1-2 sentences." },
-                priorityBook: { type: Type.STRING, description: "The main book or section of the Bible to read." },
-                structure: { type: Type.STRING, description: "How the user should structure their reading based on the time available." },
-                firstWeekReadings: { 
-                    type: Type.ARRAY,
-                    items: { type: Type.STRING },
-                    description: "A list of specific readings (book and chapters) for the first week." 
-                },
-                finalAdvice: { type: Type.STRING, description: "A final piece of advice or an encouraging thought." }
-            },
-            required: ["diagnosis", "priorityBook", "structure", "firstWeekReadings", "finalAdvice"]
-        };
-
         try {
-            const response: GenerateContentResponse = await ai.models.generateContent({
-                model: "gemini-2.5-flash",
-                contents: prompt,
-                config: {
-                    systemInstruction,
-                    responseMimeType: "application/json",
-                    responseSchema: responseSchema,
+            const response = await fetch('/api/generatePlan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({ ...formData, language }),
             });
-            
-            const responseText = response.text.trim();
-            if (!responseText) {
-                throw new Error("Empty response from AI.");
+
+            if (!response.ok) {
+                throw new Error('Failed to generate plan');
             }
 
-            const planJson = JSON.parse(responseText) as GeminiPlanResponse;
+            const planJson = await response.json() as GeminiPlanResponse;
 
             const planContent = (
                 <>
@@ -373,7 +338,6 @@ const ReadingPlans = () => {
                         <li>
                             <strong>Primeiras Leituras (Semana 1):</strong>
                             <ul>
-                                {/* Fix: Use a type guard to ensure `firstWeekReadings` is an array before mapping. This correctly narrows the type from 'unknown' and allows safe use of the .map() method. */}
                                 {Array.isArray(planJson.firstWeekReadings) && planJson.firstWeekReadings.map((reading, index) => <li key={index}>{reading}</li>)}
                             </ul>
                         </li>
@@ -395,7 +359,7 @@ const ReadingPlans = () => {
         } finally {
             setIsGeneratingPlan(false);
         }
-    }, [ai, showToast, language]);
+    }, [showToast, language]);
 
     if (view === 'form') {
         return <PlanGeneratorForm onGenerate={handleGeneratePlan} onBack={handleBackToList} isGenerating={isGeneratingPlan} />;

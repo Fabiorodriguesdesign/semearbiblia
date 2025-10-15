@@ -65,6 +65,8 @@ const SideDrawerContent = React.memo(({ onPageClick, onClose }: { onPageClick: (
             <ul className="drawer-nav">
                 <li><button onClick={() => onPageClick('bookmarks')}><i className="material-icons">bookmark_border</i> {translations.drawer_bookmarks[language]}</button></li>
                 <li><button onClick={() => onPageClick('settings')}><i className="material-icons">settings</i> {translations.settings_title[language]}</button></li>
+                <li><button onClick={() => window.open('https://flow.fabiorodriguesdesign.com/', '_blank')}><i className="material-icons">open_in_new</i> {translations.back_to_flow[language]}</button></li>
+                <li><button onClick={() => window.open('https://ko-fi.com/fabiorodriguesdsgn', '_blank')}><i className="material-icons">coffee</i> {translations.drawer_donate[language]}</button></li>
                 {canInstall && <li><button onClick={handleInstall}><i className="material-icons">install_mobile</i> {translations.drawer_install_app[language]}</button></li>}
             </ul>
             <div className="drawer-footer">

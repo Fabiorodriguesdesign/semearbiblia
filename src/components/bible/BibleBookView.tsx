@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { BookDataType, ReadingPlan } from '../../types';
+import { ChapterType, ReadingPlan } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useBible } from '../../contexts/BibleContext';
 import { useToast } from '../../contexts/ToastContext';
@@ -13,60 +13,75 @@ import ChapterSelectionView from './ChapterSelectionView';
 const BibleBookView = React.memo(({ title, description, bookSections, onBack, onAddPlan }: { title: string, description: string, bookSections: any[], onBack: (() => void) | undefined, onAddPlan: (plan: ReadingPlan) => void }) => {
     const [selectedBook, setSelectedBook] = useState<string | null>(null);
     const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [loadedBookData, setLoadedBookData] = useState<BookDataType | null>(null);
+    const [loadedChapterData, setLoadedChapterData] = useState<ChapterType | null>(null);
+    const [isChapterLoading, setIsChapterLoading] = useState(false);
+    
     const { showToast } = useToast();
     const { language } = useLanguage();
-    
-    const { getBookContent, version } = useBible(); 
+    const { getChapterContent } = useBible(); 
 
-    const handleSelectBook = useCallback(async (bookName: string) => {
-        if (!bookName) return;
-        setLoading(true);
-        setLoadedBookData(null);
+    const handleSelectBook = useCallback((bookName: string) => {
+        setSelectedBook(bookName);
+    }, []);
+
+    const handleSelectChapter = useCallback(async (chapterNum: number) => {
+        if (!selectedBook) return;
+
+        setIsChapterLoading(true);
+        setLoadedChapterData(null);
         
-        const canonicalBookName = getCanonicalName(bookName, language);
+        const canonicalBookName = getCanonicalName(selectedBook, language);
         if (!canonicalBookName) {
-            showToast(translations.content_not_available_toast[language].replace('{bookName}', bookName));
-            setLoading(false);
+            showToast(translations.content_not_available_toast[language].replace('{bookName}', selectedBook));
+            setIsChapterLoading(false);
             return;
         }
 
-        const data = await getBookContent(canonicalBookName, language, version); 
+        const data = await getChapterContent(canonicalBookName, chapterNum); 
         
-        if (data && data.chapters.length > 0) {
-            setSelectedBook(bookName);
-            setLoadedBookData(data);
+        if (data && data.verses.length > 0) {
+            setSelectedChapter(chapterNum);
+            setLoadedChapterData(data);
         } else {
-            showToast(translations.content_not_available_toast[language].replace('{bookName}', bookName));
+            showToast(translations.content_not_found_toast[language].replace('{book}', selectedBook).replace('{chapter}', String(chapterNum)));
         }
-        setLoading(false);
-    }, [getBookContent, language, version, showToast]);
+        setIsChapterLoading(false);
+    }, [getChapterContent, language, showToast, selectedBook]);
 
-    const handleSelectChapter = useCallback((chapterNum: number) => setSelectedChapter(chapterNum), []);
-    
     const handleChapterChange = useCallback((newChapter: number) => {
-        setSelectedChapter(newChapter);
+        handleSelectChapter(newChapter);
         window.scrollTo(0, 0);
+    }, [handleSelectChapter]);
+
+    const handleBackToChapters = useCallback(() => {
+        setSelectedChapter(null);
+        setLoadedChapterData(null);
     }, []);
 
-    const handleBackToChapters = useCallback(() => setSelectedChapter(null), []);
     const handleBackToBooks = useCallback(() => {
       setSelectedBook(null);
       setSelectedChapter(null);
-      setLoadedBookData(null);
+      setLoadedChapterData(null);
     }, []);
 
-    if (loading) return <div className="card"><h2>{translations.loading[language]}</h2><p>{translations.loading_book_content[language]}</p></div>;
+    if (isChapterLoading) {
+        return (
+            <div className="card">
+                <div className="spinner-container">
+                    <div className="spinner"></div>
+                </div>
+                <p style={{textAlign: 'center'}}>{translations.loading_book_content[language]}</p>
+            </div>
+        );
+    }
 
-    if (selectedBook && selectedChapter && loadedBookData) {
-        const chapterData = loadedBookData.chapters[selectedChapter - 1];
+    if (selectedBook && selectedChapter && loadedChapterData) {
         const canonicalBookName = getCanonicalName(selectedBook, language) || '';
         return (
             <ReadingView 
                 bookName={selectedBook} 
                 chapterNumber={selectedChapter} 
-                chapterData={chapterData} 
+                chapterData={loadedChapterData} 
                 onBack={handleBackToChapters}
                 totalChapters={getChapterCount(canonicalBookName)}
                 onChapterChange={handleChapterChange}
@@ -74,8 +89,10 @@ const BibleBookView = React.memo(({ title, description, bookSections, onBack, on
         );
     }
 
-    if (selectedBook && loadedBookData) {
-        return <ChapterSelectionView bookName={selectedBook} bookData={loadedBookData} onChapterSelect={handleSelectChapter} onBack={handleBackToBooks} />;
+    if (selectedBook) {
+        const canonicalBookName = getCanonicalName(selectedBook, language) || '';
+        const totalChapters = getChapterCount(canonicalBookName);
+        return <ChapterSelectionView bookName={selectedBook} totalChapters={totalChapters} onChapterSelect={handleSelectChapter} onBack={handleBackToBooks} />;
     }
 
     return (

@@ -1,10 +1,14 @@
+
 export const translations = {
     // App & General
     appName: { pt: 'Semear Bíblia', en: 'Sow Bible', es: 'Sembrar Biblia' },
     back: { pt: 'Voltar', en: 'Back', es: 'Volver' },
+    back_to_flow: { pt: 'Voltar para Flow', en: 'Back to Flow', es: 'Volver a Flow' },
     loading: { pt: 'Carregando...', en: 'Loading...', es: 'Cargando...' },
     add: { pt: 'Adicionar', en: 'Add', es: 'Añadir' },
     add_plan: { pt: 'Adicionar plano', en: 'Add plan', es: 'Añadir plan' },
+    add_study_plan: { pt: 'Adicionar Plano', en: 'Add Plan', es: 'Añadir Plan' },
+    explore: { pt: 'Explorar', en: 'Explore', es: 'Explorar' },
     save: { pt: 'Salvar', en: 'Save', es: 'Guardar' },
     cancel: { pt: 'Cancelar', en: 'Cancel', es: 'Cancelar' },
     delete: { pt: 'Excluir', en: 'Delete', es: 'Eliminar' },
@@ -49,12 +53,14 @@ export const translations = {
     verse_of_the_day: { pt: 'Versículo do Dia', en: 'Verse of the Day', es: 'Versículo del Día' },
 
     // BibleBookView
-    loading_book_content: { pt: 'Buscando conteúdo do livro...', en: 'Fetching book content...', es: 'Buscando contenido del libro...' },
+    loading_book_content: { pt: 'Buscando conteúdo do capítulo...', en: 'Fetching chapter content...', es: 'Buscando contenido del capítulo...' },
     content_not_available_toast: { pt: 'Conteúdo para "{bookName}" ainda não disponível.', en: 'Content for "{bookName}" not yet available.', es: 'Contenido para "{bookName}" aún no disponible.' },
 
     // ChapterSelectionView
     select_chapter_prompt: { pt: 'Selecione um capítulo para ler.', en: 'Select a chapter to read.', es: 'Selecciona un capítulo para leer.' },
     back_to_books: { pt: 'Voltar para Livros', en: 'Back to Books', es: 'Volver a Libros' },
+    chapter_jump_placeholder: { pt: 'Ir para capítulo...', en: 'Jump to chapter...', es: 'Ir al capítulo...' },
+    chapter_jump_button: { pt: 'Ir', en: 'Go', es: 'Ir' },
     
     // Reading View
     chapter_previous: { pt: 'Anterior', en: 'Previous', es: 'Anterior' },
@@ -62,11 +68,11 @@ export const translations = {
 
     // Bible Directory
     bible_directory_title: { pt: 'Bíblias e Textos', en: 'Bibles and Texts', es: 'Biblias y Textos' },
-    bible_directory_desc: { pt: 'Pesquise por referência (ex: João 3:16) ou palavra-chave (ex: amor).', en: 'Search by reference (e.g., John 3:16) or keyword (e.g., love).', es: 'Busca por referencia (ej: Juan 3:16) o palabra clave (ej: amor).' },
-    bible_search_placeholder: { pt: 'Pesquisar na Bíblia...', en: 'Search the Bible...', es: 'Buscar en la Biblia...' },
+    bible_directory_desc: { pt: 'Navegue pelos livros ou pesquise por uma referência específica (ex: João 3:16).', en: 'Browse the books or search for a specific reference (e.g., John 3:16).', es: 'Navega por los libros o busca una referencia específica (ej: Juan 3:16).' },
+    bible_search_placeholder: { pt: 'Pesquisar por referência (ex: João 3:16)...', en: 'Search by reference (e.g., John 3:16)...', es: 'Buscar por referencia (ej: Juan 3:16)...' },
     search_loading: { pt: 'Buscando...', en: 'Searching...', es: 'Buscando...' },
-    search_no_results: { pt: 'Nenhum resultado encontrado para', en: 'No results found for', es: 'No se encontraron resultados para' },
-    dir_read_bible: { pt: 'Ler a Bíblia', en: 'Read the Bible', es: 'Leer la Biblia' },
+    search_no_results: { pt: 'Nenhuma referência encontrada para', en: 'No reference found for', es: 'No se encontró ninguna referencia para' },
+    dir_read_bible: { pt: 'Bíblia Sagrada', en: 'Holy Bible', es: 'Santa Biblia' },
     dir_gospel_harmony: { pt: 'Harmonia dos Evangelhos', en: 'Gospel Harmony', es: 'Armonía de los Evangelios' },
     dir_thematic: { pt: 'Leitura por Temas', en: 'Thematic Reading', es: 'Lectura por Temas' },
     dir_apocrypha: { pt: 'Apócrifos e Textos Antigos', en: 'Apocrypha & Ancient Texts', es: 'Apócrifos y Textos Antiguos' },
@@ -111,7 +117,9 @@ export const translations = {
     bookmarks_description: { pt: 'Aqui estão seus versículos favoritos. Clique em um para ir diretamente para a leitura.', en: 'Here are your favorite verses. Click on one to go directly to the reading.', es: 'Aquí están tus versículos favoritos. Haz clic en uno para ir directamente a la lectura.' },
     bookmarks_empty: { pt: 'Você ainda não marcou nenhum versículo. Toque no ícone de marcador ao lado de um versículo para salvá-lo aqui.', en: 'You haven\'t bookmarked any verses yet. Tap the bookmark icon next to a verse to save it here.', es: 'Aún no has marcado ningún versículo. Toca el ícono de marcador junto a un versículo para guardarlo aquí.' },
     drawer_install_app: { pt: 'Instalar App', en: 'Install App', es: 'Instalar App' },
+    drawer_donate: { pt: 'Apoie o Projeto', en: 'Support the Project', es: 'Apoyar el Proyecto' },
     drawer_developed_by: { pt: 'Desenvolvido por', en: 'Developed by', es: 'Desarrollado por' },
+    made_by: { pt: 'Feito por', en: 'Made by', es: 'Hecho por' },
 
     // Notes
     notes_title: { pt: 'Minhas Anotações', en: 'My Notes', es: 'Mis Notas' },

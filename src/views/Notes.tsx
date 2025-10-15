@@ -206,6 +206,9 @@ ${note.content}
         }
     }, [language, showToast]);
 
+    const sortedNotes = useMemo(() => {
+        return [...notes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }, [notes]);
 
     if (editingNote) {
         return <NoteEditor noteToEdit={editingNote} onSave={handleSave} onCancel={handleCancel} onDelete={handleDelete} />;
@@ -216,7 +219,7 @@ ${note.content}
             <h2>{translations.notes_title[language]}</h2>
             <p>{translations.notes_desc[language]}</p>
             <div className="notes-list">
-                {notes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(note => (
+                {sortedNotes.map(note => (
                     <NoteCard key={note.id} note={note} onEdit={handleEdit} onShare={handleShare} />
                 ))}
             </div>

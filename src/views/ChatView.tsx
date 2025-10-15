@@ -1,38 +1,54 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { GoogleGenAI, Chat } from "@google/genai";
+// 1. IMPORTAÇÃO CORRIGIDA: Importando do novo pacote
+import { GoogleGenerativeAI, ChatSession } from "@google/generative-ai";
 import { useLanguage } from '../contexts/LanguageContext';
 import { translations } from '../data/translations';
 import { useToast } from '../contexts/ToastContext';
+
+// 2. CORREÇÃO DA API KEY: Pegando a chave do ambiente Vite
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
 const ChatView = () => {
     const [messages, setMessages] = useState<{ role: 'user' | 'model', text: string }[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const chatRef = useRef<Chat | null>(null);
+    // A referência agora é para ChatSession, do novo SDK
+    const chatRef = useRef<ChatSession | null>(null);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const { language } = useLanguage();
     const { showToast } = useToast();
     
-    const ai = useMemo(() => new GoogleGenAI({ apiKey: process.env.API_KEY }), []);
+    // A inicialização do AI agora é feita com a chave do ambiente
+    const ai = useMemo(() => new GoogleGenerativeAI(apiKey), [apiKey]);
 
     const initChat = useCallback(() => {
-        chatRef.current = ai.chats.create({
-            model: 'gemini-2.5-flash',
-            config: {
-                systemInstruction: translations.chat_system_instruction[language],
-            },
-        });
+        // A criação do chat mudou ligeiramente com o novo SDK
+        chatRef.current = ai.getGenerativeModel({ model: 'gemini-1.5-flash' })
+            .startChat({
+                systemInstruction: {
+                    role: 'model',
+                    parts: [{ text: translations.chat_system_instruction[language] }]
+                },
+            });
     }, [ai, language]);
 
     useEffect(() => {
+        if (!apiKey) {
+            console.error("VITE_GEMINI_API_KEY não foi encontrada. Crie um arquivo .env.local e adicione a variável.");
+            showToast("A chave da API para o chat não está configurada.");
+            setMessages([{ role: 'model', text: "Erro de configuração. O serviço de chat está indisponível." }]);
+            return;
+        }
+
         initChat();
         const startConversation = async () => {
             if (chatRef.current) {
                 setIsLoading(true);
                 setMessages([]);
                 try {
-                    const response = await chatRef.current.sendMessage({ message: translations.chat_welcome_prompt[language] });
-                    setMessages([{ role: 'model', text: response.text }]);
+                    const result = await chatRef.current.sendMessage(translations.chat_welcome_prompt[language]);
+                    const response = result.response;
+                    setMessages([{ role: 'model', text: response.text() }]);
                 } catch (error) {
                     console.error("Error starting chat:", error);
                     setMessages([{ role: 'model', text: translations.chat_error[language] }]);
@@ -43,7 +59,7 @@ const ChatView = () => {
             }
         };
         startConversation();
-    }, [language, initChat, showToast]);
+    }, [language, initChat, showToast, apiKey]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -60,8 +76,9 @@ const ChatView = () => {
 
         if (chatRef.current) {
             try {
-                const response = await chatRef.current.sendMessage({ message: userMessage.text });
-                setMessages(prev => [...prev, { role: 'model', text: response.text }]);
+                const result = await chatRef.current.sendMessage(userMessage.text);
+                const response = result.response;
+                setMessages(prev => [...prev, { role: 'model', text: response.text() }]);
             } catch (error) {
                 console.error("Error sending message:", error);
                 setMessages(prev => [...prev, { role: 'model', text: translations.chat_error[language] }]);
@@ -70,7 +87,7 @@ const ChatView = () => {
                 setIsLoading(false);
             }
         }
-    }, [input, isLoading, language, showToast]);
+    }, [input, isLoading, language, showToast, chatRef]);
 
     return (
         <div className="chat-view-container">
